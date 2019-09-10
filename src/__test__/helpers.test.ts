@@ -1,5 +1,6 @@
 import { Board } from '../Sudoku';
-import { cloneBoard, randomBetween, randomSector, scatter } from '../helpers';
+import { cloneBoard, randomBetween, randomSector, scatter, createWinnerBoard } from '../helpers';
+import { SmartBoard } from '../../dist';
 
 describe('cloneBoard', () => {
   /**
@@ -110,6 +111,27 @@ describe('scatter', () => {
       const result = scatter(threshold);
   
       expect(Number(result.reduce((a, b) => a + b))).toBe(Number(threshold));
+    });
+  });
+});
+
+describe('createWinnerBoard', () => {
+  it('Should return a SmartBoard instance', () => {
+    const solution = createWinnerBoard();
+
+    expect(solution).toBeInstanceOf(SmartBoard);
+  });
+
+  it('Should create a board solved', () => {
+    const solution = createWinnerBoard();
+
+    solution.smartSectorList.forEach((sector) => {
+      expect(sector.toArray().reduce((a, b) => a + b)).toBe(45);
+    });
+    expect(solution.smartFieldList.map(({ value }) => value).reduce((a, b) => a + b)).toBe(405);
+
+    solution.smartFieldList.forEach((field) => {
+      expect(field.validate(field.value)).toBeTruthy();
     });
   });
 });
